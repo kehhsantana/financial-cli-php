@@ -14,27 +14,30 @@ function calculateTaxes($operations): array
             $totalStockQuantity += $operation['quantity'];
             $remainingStocks = $totalStockQuantity - $operation['quantity'];
             $newStocksWeightedAverage = $operation['quantity'] * $operation['unit-cost'];
-            $weightedAveragePrice = (
-                ($remainingStocks * $weightedAveragePrice) +
-                $newStocksWeightedAverage
-            ) / $totalStockQuantity;
-            $tax = 0;
+            $weightedAveragePrice = number_format(
+                (($remainingStocks * $weightedAveragePrice) + $newStocksWeightedAverage) / $totalStockQuantity,
+                2,
+                '.',
+                ''
+            );
+            $tax =  number_format(0, 2, '.', '');
             $taxes[] = ['tax' => $tax];
         }
         if ($operation['operation'] == 'sell') {
             $totalStockQuantity -= $operation['quantity'];
-            $gain = ($operation['unit-cost'] - $weightedAveragePrice) * $operation['quantity'];
+            $gain = number_format(($operation['unit-cost'] - $weightedAveragePrice) * $operation['quantity'], 2, '.', '');
 
             if ($gain > 0 && $gain > $accumulatedLoss) {
                 $gain = $gain - $accumulatedLoss;
                 $tax = 0.2 * $gain;
+                $tax = number_format($tax, 2, '.', '');
             } else {
-                $tax = 0;
+                $tax =  number_format(0, 2, '.', '');
                 $accumulatedLoss -= $gain;
             }
 
             if ($operation['unit-cost'] * $operation['quantity'] <= 20000) {
-                $tax = 0;
+                $tax =  number_format(0, 2, '.', '');
             }
 
             $taxes[] = ['tax' => $tax];
